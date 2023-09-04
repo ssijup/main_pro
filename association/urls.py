@@ -1,0 +1,48 @@
+from django.contrib import admin
+from django.urls import path, include
+
+from .views import AssociationListView,CourtListView, SuspendAssociationView,EditCourtView,MembershipPlanView,EditAssociationView,ToggleMembershipFineAmountView,ToggleMembershipPlanView, MembershipPaymentView,DeleteAssociationAdmin,DeleteAssociationView, NotificationView,ListNormalAdminView, CreateAssociationAdminView, DeleteAssociationView
+
+
+urlpatterns = [
+    
+#court
+   path("court/list", CourtListView.as_view(), name = "CourtListView"),
+   path("court/edit-court/<id>", AssociationListView.as_view(), name = "AssociationListView"),
+   path("court/delete-court/<id>", AssociationListView.as_view(), name = "AssociationListView"),
+   
+#association
+   path("list", AssociationListView.as_view(), name = "AssociationListView"),
+   path("create-association", AssociationListView.as_view(), name = "AssociationListView"),
+   path("edit-association/<id>", EditAssociationView.as_view(), name = "EditAssociationView"),
+   path('delete-association/<id>',DeleteAssociationView.as_view(),name="DeleteAssociationView"),
+   path("suspend-association/<id>", SuspendAssociationView.as_view(), name = "SuspendAssociationView"),
+   path("delete-association-super-admin/<id>",DeleteAssociationAdmin.as_view() ,name="DeleteAssociationView"),
+   path("delete-association-normal-admin/<id>",DeleteAssociationAdmin.as_view() ,name="DeleteAssociationAdmin"),
+   path("association-normal-admin/list/<advocate_id>/<association_id>",ListNormalAdminView.as_view() ,name="ListNormalAdminView"),
+   path("create-association-super-admin/<advocate_id>/<association_id>",CreateAssociationAdminView.as_view() ,name="CreateAssociationAdminView"),
+   path("create-association-normal-admin/<advocate_id>/<association_id>",CreateAssociationAdminView.as_view() ,name="CreateAssociationAdminView"),
+
+#membership plan
+   path("membership-plan/list",MembershipPlanView.as_view(),name="MembershipPlanViews"),
+   path("membership-plan/create",MembershipPlanView.as_view(),name="MembershipPlanView"),
+   path("membership-plan/edit/<id>",ToggleMembershipPlanView.as_view(),name="ToggleMembershipPlanView"),
+   path("membership-plan/delete/<id>",ToggleMembershipPlanView.as_view(),name="ToggleMembershipPlanView"),
+
+#membership fine amount
+   path("fine-amount/create",ToggleMembershipFineAmountView.as_view(),name="ToggleMembershipFineAmountView"),
+   path("fine-amount/edit/<id>",ToggleMembershipFineAmountView.as_view(),name="ToggleMembershipFineAmountView"),
+   path("fine-amount/delete/<id>",ToggleMembershipFineAmountView.as_view(),name="ToggleMembershipFineAmountView"),
+   path("fine-amount/list",ToggleMembershipFineAmountView.as_view(),name="ToggleMembershipFineAmountView"),   #not in api
+
+#payment
+   path("membership-payment/create",MembershipPaymentView.as_view() ,name="MembershipPaymentView"),
+   path("membership-payment/list",MembershipPaymentView.as_view() ,name="MembershipPaymentView"),
+
+ #notification
+   path("notification/list",NotificationView.as_view() ,name="NotificationView"),
+   path("notification/edit/<id>",NotificationView.as_view() ,name="NotificationView"),
+   path("notification/create/<id>",NotificationView.as_view() ,name="NotificationView"),
+
+  
+]
