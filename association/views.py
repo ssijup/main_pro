@@ -7,22 +7,35 @@ from django.shortcuts import render
 from rest_framework import status
 from django.utils import timezone
 
-from .serializer import AssociationListSerializer,CourtListSerializer,AssociationMembershipPaymentSerializer, CreateAssociationAdminSerializer,NotificationSerializer,MembershipFineAmountSerializer, ListNormalAdminSerializer, MembershipPlanSerializer
+from .serializer import AssociationListSerializer,CourtListSerializer,AssociationMembershipPaymentSerializer,NotificationSerializer,MembershipFineAmountSerializer, MembershipPlanSerializer
 from .models import Association, Court, Jurisdiction,AssociationMembershipPayment,AssociationPaymentRequest, MembershipPlan,MembershipFineAmount,Notification
 from advocates.serializer import AdvocatesListSerializer
-from userapp.models import AdminRole, Advocate
+from userapp.models import Advocate
 
 from django.conf import settings
 api = Instamojo(api_key=settings.API_KEY, auth_token=settings.AUTH_TOKEN, endpoint='https://test.instamojo.com/api/1.1/')
  
+# from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from rest_framework import status
+# from .models import Court
 
+
+
+class CreateCourtView(APIView):
+    def post(self, request):
+        serializer = CourtListSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Court created successfully"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CourtListView(APIView):
     def get(self, request):
         advocates = Court.objects.all()
         serializer = CourtListSerializer(advocates, many = True)
-        return Response({"data":serializer.data},status= status.HTTP_200_OK)
+        return Response(serializer.data,status= status.HTTP_200_OK)
     
     def delete(self, request, id):
         try:
@@ -123,45 +136,46 @@ class SuspendAssociationView(APIView):
 
 
 class CreateAssociationAdminView(APIView):
-    def post(self, request, advocate_id, association_id):
-        serializer = CreateAssociationAdminSerializer(data=request.data)
-        try:
-            if serializer.is_valid(raise_exception=True):
-                data = serializer.validated_data
-                try:
-                    advocate = Advocate.objects.get(id=advocate_id)
-                    association = Association.objects.get(id=association_id)
+    # def post(self, request, advocate_id, association_id):
+    #     serializer = CreateAssociationAdminSerializer(data=request.data)
+    #     try:
+    #         if serializer.is_valid(raise_exception=True):
+    #             data = serializer.validated_data
+    #             try:
+    #                 advocate = Advocate.objects.get(id=advocate_id)
+    #                 association = Association.objects.get(id=association_id)
                       
-                except Advocate.DoesNotExist: 
-                        return Response({
-                            "message" : "Advocate could not be found"
-                            }, status= status.HTTP_400_BAD_REQUEST)
-                except Association.DoesNotExist:
-                    return Response({
-                        "message" : "Association could not be found"
-                        }, status= status.HTTP_400_BAD_REQUEST)
+    #             except Advocate.DoesNotExist: 
+    #                     return Response({
+    #                         "message" : "Advocate could not be found"
+    #                         }, status= status.HTTP_400_BAD_REQUEST)
+    #             except Association.DoesNotExist:
+    #                 return Response({
+    #                     "message" : "Association could not be found"
+    #                     }, status= status.HTTP_400_BAD_REQUEST)
 
-                if data['admin_roles'] == 'SUPER_ADMIN':
-                    if AdminRole.objects.filter(advocate=advocate, ass_super=association).exists():
-                        return Response({'message':'The advocate already exists as an Super admin'},status=status.HTTP_409_CONFLICT)
-                    AdminRole.objects.create(advocate=advocate, ass_super=association)
-                    return Response({
-                        "message":"Super Admin created sucessfully"
-                        },status=status.HTTP_201_CREATED)
+    #             if data['admin_roles'] == 'SUPER_ADMIN':
+    #                 if AdminRole.objects.filter(advocate=advocate, ass_super=association).exists():
+    #                     return Response({'message':'The advocate already exists as an Super admin'},status=status.HTTP_409_CONFLICT)
+    #                 AdminRole.objects.create(advocate=advocate, ass_super=association)
+    #                 return Response({
+    #                     "message":"Super Admin created sucessfully"
+    #                     },status=status.HTTP_201_CREATED)
                 
-                elif data['admin_roles'] == 'NORMAL_ADMIN':
-                    if AdminRole.objects.filter(advocate=advocate, ass_normal=association).exists():
-                        return Response({'message':'The advocate already exists as an Normal admin'},status=status.HTTP_409_CONFLICT)
-                    AdminRole.objects.create(advocate=advocate, ass_normal=association)
-                    return Response({
-                        "message":"Normal Admin created sucessfully"
-                        },status=status.HTTP_201_CREATED)
+    #             elif data['admin_roles'] == 'NORMAL_ADMIN':
+    #                 if AdminRole.objects.filter(advocate=advocate, ass_normal=association).exists():
+    #                     return Response({'message':'The advocate already exists as an Normal admin'},status=status.HTTP_409_CONFLICT)
+    #                 AdminRole.objects.create(advocate=advocate, ass_normal=association)
+    #                 return Response({
+    #                     "message":"Normal Admin created sucessfully"
+    #                     },status=status.HTTP_201_CREATED)
     
-        except serializers.ValidationError:
-            return Response({
-                "message": "Validation failed",
-                "errors": serializer.errors
-            }, status=status.HTTP_400_BAD_REQUEST)
+    #     except serializers.ValidationError:
+    #         return Response({
+    #             "message": "Validation failed",
+    #             "errors": serializer.errors
+    #         }, status=status.HTTP_400_BAD_REQUEST)
+    pass
         
 
 
@@ -181,12 +195,13 @@ class DeleteAssociationView(APIView):
 
     
 class ListNormalAdminView(APIView):
-    def get(self, request):
-        normal_admin=AdminRole.objects.all()
-        serializer=ListNormalAdminSerializer(normal_admin,many=True)
-        if serializer.is_valid():
-            return Response({"message":serializer.data},status=status.HTTP_200_OK)
-        return Response({"message":"Something went wrong "+str(serializer.errors)},status=status.HTTP_400_BAD_REQUEST)
+    # def get(self, request):
+    #     normal_admin=AdminRole.objects.all()
+    #     serializer=ListNormalAdminSerializer(normal_admin,many=True)
+    #     if serializer.is_valid():
+    #         return Response({"message":serializer.data},status=status.HTTP_200_OK)
+    #     return Response({"message":"Something went wrong "+str(serializer.errors)},status=status.HTTP_400_BAD_REQUEST)
+    pass
         
 
 

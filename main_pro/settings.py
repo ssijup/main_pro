@@ -44,9 +44,14 @@ INSTALLED_APPS = [
     'registrar',
     'rest_framework', 
     'rest_framework_simplejwt',
+    'corsheaders',
 ]
 
+
+
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -146,3 +151,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 API_KEY = 'test_d392211dc662c82576c15b2b64b'
 AUTH_TOKEN = 'test_eb4ad2a7d6878a4a48802b301e7'
 SALT = 'f73ed01e49094de99f51e252e943e8ef'
+
+CORS_ALLOW_ALL_ORIGINS = True

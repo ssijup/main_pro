@@ -1,15 +1,17 @@
 from django.contrib import admin
 from django.urls import path, include
 
-from .views import AssociationListView,CourtListView, SuspendAssociationView,EditCourtView,MembershipPlanView,EditAssociationView,ToggleMembershipFineAmountView,ToggleMembershipPlanView, MembershipPaymentView,DeleteAssociationAdmin,DeleteAssociationView, NotificationView,ListNormalAdminView, CreateAssociationAdminView, DeleteAssociationView
+from .views import AssociationListView,CourtListView, SuspendAssociationView,EditCourtView,MembershipPlanView,EditAssociationView,ToggleMembershipFineAmountView,ToggleMembershipPlanView, MembershipPaymentView,DeleteAssociationAdmin,DeleteAssociationView, NotificationView,ListNormalAdminView, CreateAssociationAdminView, DeleteAssociationView, CreateCourtView
 
 
 urlpatterns = [
     
 #court
    path("court/list", CourtListView.as_view(), name = "CourtListView"),
-   path("court/edit-court/<id>", AssociationListView.as_view(), name = "AssociationListView"),
-   path("court/delete-court/<id>", AssociationListView.as_view(), name = "AssociationListView"),
+   path("court/create-court", CreateCourtView.as_view(), name = "CreateCourtView"),
+   path("court/edit-court/<id>", EditCourtView.as_view(), name = "EditCourtView"),
+   path("court/delete-court/<id>", CourtListView.as_view(), name = "CourtListView"),
+   
    
 #association
    path("list", AssociationListView.as_view(), name = "AssociationListView"),

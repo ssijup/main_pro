@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
 from .models import Association, Jurisdiction ,Court, MembershipPlan, MembershipFineAmount, Notification, AssociationMembershipPayment
-from userapp.models import AdminRole
-from association.models import ASSOCIATION_ROLE_TYPE_CHOICES
+# from userapp.models import AdminRole
+# from association.models import ASSOCIATION_ROLE_TYPE_CHOICES
 
 
 
@@ -16,13 +16,13 @@ class AssociationListSerializer(serializers.ModelSerializer):
         model = Association
         fields = "__all__"
 
-class CreateAssociationAdminSerializer(serializers.Serializer):
-    admin_roles = serializers.ChoiceField(choices=ASSOCIATION_ROLE_TYPE_CHOICES)
+# class CreateAssociationAdminSerializer(serializers.Serializer):
+#     admin_roles = serializers.ChoiceField(choices=ASSOCIATION_ROLE_TYPE_CHOICES)
 
-class ListNormalAdminSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AdminRole
-        fields = "__all__"
+# class ListNormalAdminSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = AdminRole
+#         fields = "__all__"
 
 class MembershipPlanSerializer(serializers.ModelSerializer):
     class Meta:
