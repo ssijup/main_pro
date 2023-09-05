@@ -42,8 +42,8 @@ class Advocate(models.Model):
     enrollment_id=models.CharField(max_length=200)
     specialization=models.CharField(max_length=200)
     address=models.CharField(max_length=200,default='not given')
-    profile_image=models.ImageField(null=True,blank=True)
-    document_image=models.ImageField(null=True,blank=True)
+    profile_image=models.ImageField(upload_to='media/', null=True, blank=True)
+    document_image=models.ImageField(upload_to='media/', null=True, blank=True)
     is_suspend=models.BooleanField(default=False)
     type_of_user = models.CharField(max_length=255,default="normal_user")
     def __str__(self): 
