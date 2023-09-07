@@ -7,6 +7,6 @@ class LawFirm(models.Model):
     specialization=models.CharField(max_length=200)
     description=models.CharField(max_length=200)
     estd_date=models.DateField(default='9999-99-99')
-    created_by =models.OneToOneField('userapp.Advocate',on_delete=models.CASCADE, related_name='created_lawfirms')
+    created_by =models.OneToOneField('userapp.Advocate',on_delete=models.CASCADE, related_name='created_lawfirms',default='1')
     is_suspend=models.BooleanField(default= False)
 

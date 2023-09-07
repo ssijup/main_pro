@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'advocates',
     'association',
     'lawfirm',
-    'registrar',
+    # 'registrar',
     'rest_framework', 
     'rest_framework_simplejwt',
     'corsheaders',

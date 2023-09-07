@@ -13,7 +13,7 @@ from .models import LawFirm
 class LawFirmListView(APIView):
     def get(self, request):
         lawfirm = LawFirm.objects.all()
-        serializer = LawFirmListSerializer(lawfirm, many = True)
+        serializer = LawFirmListSerializer(lawfirm, many=True)
         return Response(serializer.data,status= status.HTTP_200_OK)
     
 
@@ -45,8 +45,8 @@ class SuspendLawFirmView(APIView):
             lawfirm.save()
 
             if lawfirm.is_suspend:
-                return Response({"message" : "LawFirm suspended sucessfully",  "data":serializer.data}, status = status.HTTP_202_ACCEPTED)
-            return Response({"message" : "LawFirm suspension removed sucessfully", "data":serializer.data}, status = status.HTTP_202_ACCEPTED)
+                return Response({"message" : "LawFirm suspended sucessfully"}, status = status.HTTP_202_ACCEPTED)
+            return Response({"message" : "LawFirm suspension removed sucessfully"}, status = status.HTTP_202_ACCEPTED)
 
         except LawFirm.DoesNotExist:
             return Response({
@@ -79,7 +79,7 @@ class EditLawfirmView(APIView):
     def patch(self, request, id):
         try:
             lawfirm=LawFirm.objects.get(id=id)
-            serializer = LawFirmListSerializer(lawfirm, data=request.data, many=True)
+            serializer = LawFirmListSerializer(lawfirm, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response({"message" : "Lawfirm details updated sucessfully"},status=status.HTTP_200_OK)
@@ -88,3 +88,18 @@ class EditLawfirmView(APIView):
             return Response({"message" : "Lawfirm could not be found"},status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"message" : "An unexcepted error occured "},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+class LawfirmEditFormView(APIView):
+    def get(self, request, id) :
+        try:
+            notification=LawFirm.objects.get(id=id)
+            serializer=LawFirmListSerializer(notification)
+            return Response(serializer.data ,status=status.HTTP_200_OK)
+
+        except LawFirm.DoesNotExist:
+                    return Response({"message" : "Lawfirm could not be found"},status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+                    return Response({
+                        "message": "An unexpected error occurred"
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

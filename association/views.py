@@ -29,6 +29,24 @@ class CreateCourtView(APIView):
             serializer.save()
             return Response({"message": "Court created successfully"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class CourtEditFormView(APIView):
+    def get(self, request, id) :
+        try:
+            plan= Court.objects.get(id=id)
+            serializer=CourtListSerializer(plan)
+            return Response(serializer.data ,status=status.HTTP_200_OK)
+
+        except Court.DoesNotExist:
+            return Response({
+                "message" : "Court details could not be found"
+                }, status=status.HTTP_404_NOT_FOUND )
+        except Exception as e:
+            return Response({
+                "message": "An unexpected error occurred"       
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 class CourtListView(APIView):
@@ -55,7 +73,7 @@ class EditCourtView(APIView):
     def patch(self, request, id):
         try:
             court=Court.objects.get(id=id)
-            serializer = CourtListSerializer(court, data=request.data, many=True)
+            serializer = CourtListSerializer(court, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response({"message" : "Court details updated sucessfully"},status=status.HTTP_200_OK)
@@ -84,7 +102,6 @@ class AssociationListView(APIView):
         except serializers.ValidationError:  
             return Response({
                 "message": "Validation failed",
-                "errors": serializer.errors
             }, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
@@ -93,16 +110,32 @@ class AssociationListView(APIView):
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+class AssociationEditFormView(APIView):
+    def get(self, request, id) :
+        try:
+            plan= Association.objects.get(id=id)
+            serializer=AssociationListSerializer(plan)
+            return Response(serializer.data ,status=status.HTTP_200_OK)
+
+        except Court.DoesNotExist:
+            return Response({
+                "message" : "Association details could not be found"
+                }, status=status.HTTP_404_NOT_FOUND )
+        except Exception as e:
+            return Response({
+                "message": "An unexpected error occurred"           
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class EditAssociationView(APIView):
     def patch(self, request, id):
         try:
             association=Association.objects.get(id=id)
-            serializer = AssociationListSerializer(association, data=request.data, many=True)
+            serializer = AssociationListSerializer(association, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response({"message" : "Association details updated sucessfully"},status=status.HTTP_200_OK)
-            return Response({"message" : "Association could not be found"},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message" : "Validation failed"},status=status.HTTP_400_BAD_REQUEST)
         except Association.DoesNotExist:
             return Response({"message" : "Association could not be found"},status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
@@ -119,18 +152,17 @@ class SuspendAssociationView(APIView):
             association.save()
 
             if association.is_suspend:
-                return Response({"Message" : "Association suspended sucessfully", "data":serializer.data}, status = status.HTTP_202_ACCEPTED)
-            return Response({"Message" : "Association suspension removed sucessfully", "data":serializer.data}, status = status.HTTP_202_ACCEPTED)
+                return Response({"message" : "Association suspended sucessfully"}, status = status.HTTP_202_ACCEPTED)
+            return Response({"message" : "Association suspension removed sucessfully"}, status = status.HTTP_202_ACCEPTED)
 
         except Association.DoesNotExist:
             return Response({
-                "error" : "Association does not found"
+                "message" : "Association does not found"
                 }, status= status.HTTP_400_BAD_REQUEST)
         
         except Exception as e:
             return Response({
                 "message": "An unexpected error occurred",
-                "errors": str(e) 
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -223,21 +255,37 @@ class MembershipPlanView(APIView):
         data = request.data
         serializer = MembershipPlanSerializer(data=data)
         if serializer.is_valid():
-            plan = serializer.validated_data['membership_plan']
+            duration = serializer.validated_data['duration']
             unit = serializer.validated_data['unit_of_plan']
-            if MembershipPlan.objects.filter(membership_plan = plan ,unit_of_plan = unit).exists() :
-                return Response({"message": "Plan already exits"} ,status =status.HTTP_409_CONFLICT)
+            price = serializer.validated_data['membership_price']
+            if MembershipPlan.objects.filter(duration = duration ,unit_of_plan = unit, membership_price = price).exists() :
+                return Response({"message": "Plan already exists"} ,status =status.HTTP_409_CONFLICT)
             serializer.save()
             return Response({"message " : "Plan added sucesfully" ,'data' :serializer.data} ,status =status.HTTP_201_CREATED)
-        return Response({"message" : " Error Invalid data " } ,serializer.errors)
+        return Response({"message" : "Validation failed" } ,serializer.errors)
     
     def get(self, request) :
         data = MembershipPlan.objects.all()
         serializer = MembershipPlanSerializer(data ,many = True)
-        return Response({"data":serializer.data },status=status.HTTP_200_OK)
+        return Response(serializer.data ,status=status.HTTP_200_OK)
     
 
 class ToggleMembershipPlanView(APIView):
+    def get(self, request, id) :
+        try:
+            plan= MembershipPlan.objects.get(id=id)
+            serializer=MembershipPlanSerializer(plan)
+            return Response(serializer.data ,status=status.HTTP_200_OK)
+
+        except MembershipPlan.DoesNotExist:
+            return Response({
+                "message" : "Membership plan could not be found"
+                }, status=status.HTTP_404_NOT_FOUND )
+        except Exception as e:
+            return Response({
+                "message": "An unexpected error occurred"           
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     def patch(self, request, id):
         data=request.data
         try:
@@ -282,7 +330,7 @@ class ToggleMembershipFineAmountView(APIView):
     def get(self, request):
         data=MembershipFineAmount.objects.all()
         serializer=MembershipFineAmountSerializer(data, many = True)
-        return Response({"data":serializer.data },status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     def patch(self, request, id):
         data= request.data
@@ -350,9 +398,23 @@ class NotificationView(APIView):
                     return Response({"message" : "Notification content could not be found"},status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
                     return Response({
-                        "message": "An unexpected error occurred "+str(e) 
+                        "message": "An unexpected error occurred "
                 }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+class NotificationEditFormView(APIView):
+    def get(self, request, id) :
+        try:
+            notification=Notification.objects.get(id=id)
+            serializer=NotificationSerializer(notification)
+            return Response(serializer.data ,status=status.HTTP_200_OK)
+
+        except Notification.DoesNotExist:
+                    return Response({"message" : "Notification content could not be found"},status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+                    return Response({
+                        "message": "An unexpected error occurred "
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class MembershipPaymentView(APIView):
@@ -371,7 +433,7 @@ class MembershipPaymentView(APIView):
         user_id = request.data.get('user_id')
         plan_id = request.data.get('plan_id')
         if user_id is None or plan_id is None:
-            return Response({"message" : "In valid request, the user id or plan id is missing"})
+            return Response({"message" : "In valid request"})
         try :
             user_data = Advocate.objects.get(id = user_id)
             plan_data = MembershipPlan.objects.get(id = plan_id)
@@ -423,7 +485,7 @@ class MembershipPaymentView(APIView):
 
     def get(self, request):
         membershiplist=AssociationMembershipPayment.objects.all()
-        serializer=AssociationMembershipPaymentSerializer(membershiplist,many=True)
+        serializer=AssociationMembershipPaymentSerializer(membershiplist, partial=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 
@@ -433,7 +495,7 @@ class Paymentsucessfull(APIView):
         payment_requested_id_in_request = request.GET.get("payment_request_id")
         payment_id = request.GET.get('payment_id')
         try :
-            payment_requested_user = AssociationPaymentRequest.objects.get(payment_request_id =payment_requested_id_in_request )
+            payment_requested_user = AssociationPaymentRequest.objects.get(payment_request_id =payment_requested_id_in_request)
         except AssociationPaymentRequest.DoesNotExist:
             return Response({"message" : "Payment user does not exixtss "} ,status = status.HTTP_401_UNAUTHORIZED)
         plan_data = payment_requested_user.payment_requested_plan
